@@ -1,0 +1,113 @@
+"use client";
+
+import { ClientEvents, FontFamily as FONT_FAMILY } from "@/constants/index";
+import {
+  ComicShannsFontSvg,
+  NunitoFontSvg,
+  LivedrawFontSvg,
+} from "@/constants/svg";
+import { useCanva } from "@/hooks/use-canva-store";
+import { cn, getFontCSS } from "@/lib/utils";
+import { Shape } from "@/types/shape";
+import { ToolType } from "@/types/tools";
+
+type FontFamilyProps = {
+  selectedShapeId: string | null;
+  isConnected: boolean;
+  shapes: Shape[];
+  sendEncryptedMessage: (
+    shape: Shape,
+    type: ClientEvents,
+    toBeAdded: boolean,
+    toBeDeleted: boolean
+  ) => void;
+};
+
+export const FontFamily = ({
+  selectedShapeId,
+  isConnected,
+  shapes,
+  sendEncryptedMessage,
+}: FontFamilyProps) => {
+  const {
+    canvaFontFamily,
+    canvaShapes,
+    onSetCanvaFontFamily,
+    onSetCanvaShapes,
+  } = useCanva();
+
+  let newShapes = isConnected ? shapes : canvaShapes;
+
+  const onClick = (font: FONT_FAMILY) => {
+    onSetCanvaFontFamily(font);
+    if (selectedShapeId !== null) {
+      let shapeToUpdate = newShapes.find((s) => s.id === selectedShapeId)!;
+      if (shapeToUpdate.type === ToolType.Text) {
+        shapeToUpdate = {
+          ...shapeToUpdate,
+          fontFamily: getFontCSS(font),
+        };
+      }
+      if (isConnected) {
+        sendEncryptedMessage(
+          shapeToUpdate,
+          ClientEvents.Encryption,
+          true,
+          false
+        );
+      } else {
+        newShapes = canvaShapes.map((s) =>
+          s.id === selectedShapeId ? shapeToUpdate : s
+        );
+        onSetCanvaShapes([...newShapes]);
+      }
+    }
+  };
+  return (
+    <div className="flex flex-col space-y-2">
+      <h3 className="text-on-surface text-[11px] font-normal tracking-tigher">
+        Font family
+      </h3>
+      <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          <div
+            tabIndex={0}
+            onClick={(e) => {
+              e.currentTarget.focus();
+              onClick(FONT_FAMILY.LivedrawFont);
+            }}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 border-default-border-color bg-button-bg focus:ring-1 focus:ring-brand-hover rounded-sm cursor-pointer transition duration-100",
+              canvaFontFamily === FONT_FAMILY.LivedrawFont &&
+              "bg-surface-primary-container border-surface-primary-container"
+            )}
+          >
+            <LivedrawFontSvg />
+          </div>
+          <div
+            tabIndex={0}
+            onClick={() => onClick(FONT_FAMILY.Nunito)}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 border-default-border-color bg-button-bg focus:ring-1 focus:ring-brand-hover rounded-sm cursor-pointer transition duration-100",
+              canvaFontFamily === FONT_FAMILY.Nunito &&
+              "bg-surface-primary-container border-surface-primary-container"
+            )}
+          >
+            <NunitoFontSvg />
+          </div>
+          <div
+            tabIndex={0}
+            onClick={() => onClick(FONT_FAMILY.Comicshanns)}
+            className={cn(
+              "flex items-center justify-center h-8 w-8 border-default-border-color bg-button-bg focus:ring-1 focus:ring-brand-hover rounded-sm cursor-pointer transition duration-100",
+              canvaFontFamily === FONT_FAMILY.Comicshanns &&
+              "bg-surface-primary-container border-surface-primary-container"
+            )}
+          >
+            <ComicShannsFontSvg />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

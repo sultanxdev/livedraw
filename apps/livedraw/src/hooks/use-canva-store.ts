@@ -1,0 +1,110 @@
+import { create } from "zustand";
+
+import {
+  ArrowTypes,
+  BACKGROUND_DARK_COLORS,
+  CANVAS_BG_DARK_COLOR,
+  CursorType,
+  Edges,
+  FillStyle,
+  FontFamily,
+  FontSize,
+  Sloppiness,
+  CanvaModalType,
+  STROKE_DARK_COLORS,
+  STROKE_DASH_OFFSET,
+  STROKE_WIDTH,
+} from "@/constants/index";
+import { Shape } from "@/types/shape";
+import { ToolType } from "@/types/tools";
+import { RoughCanvas } from "roughjs/bin/canvas";
+
+interface CanvaStore {
+  canvas: HTMLCanvasElement | null;
+  roughCanvas: RoughCanvas | null;
+  themeColor: string;
+  tooltype: ToolType;
+  isOpen: boolean;
+  canvasModalType: CanvaModalType | null;
+  canvasData: string | null;
+  canvasScale: number;
+  canvaCursorType: CursorType;
+  canvaShapes: Shape[];
+  canvaBgColor: string | "transparent";
+  canvaStrokeColor: string;
+  canvaStrokeWidth: number;
+  canvaStrokeDashOffset: number;
+  canvaFillstyle: FillStyle;
+  canvaSloppiness: Sloppiness;
+  canvaEdge: Edges;
+  canvaArrowType: ArrowTypes;
+  canvaFontSize: FontSize;
+  canvaFontFamily: FontFamily;
+
+  onSetCanva: (canvas: HTMLCanvasElement) => void;
+  onSetThemeColor: (color: string) => void;
+  onSelectTooltype: (tooltype: ToolType) => void;
+  onOpen: (type: CanvaModalType, data: string | null) => void;
+  onClose: () => void;
+  onSetCanvasScale: (scale: number) => void;
+  onSetCanvaCursorType: (cursorType: CursorType) => void;
+  onSetRoughCanvas: (roughCanvas: RoughCanvas) => void;
+  onSetCanvaShapes: (shapes: Shape[]) => void;
+  onSetCanvaBgColor: (color: string) => void;
+  onSetCanvaStrokeColor: (color: string) => void;
+  onSetCanvaStrokeWidth: (width: number) => void;
+  onSetCanvaStrokeDashOffset: (offset: number) => void;
+  onSetCanvaFillstyle: (style: FillStyle) => void;
+  onSetCanvaSloppiness: (sloppiness: Sloppiness) => void;
+  onSetCanvaEdge: (edge: Edges) => void;
+  onsetCanvaArrowType: (type: ArrowTypes) => void;
+  onSetCanvaFontSize: (type: FontSize) => void;
+  onSetCanvaFontFamily: (font: FontFamily) => void;
+}
+
+export const useCanva = create<CanvaStore>((set) => ({
+  canvas: null,
+  themeColor: CANVAS_BG_DARK_COLOR[0],
+  isOpen: false,
+  tooltype: ToolType.Select,
+  roughCanvas: null,
+  canvasModalType: null,
+  canvasData: null,
+  canvasScale: 1,
+  canvaCursorType: CursorType.Crosshair,
+  canvaShapes: [],
+  canvaBgColor: BACKGROUND_DARK_COLORS[0],
+  canvaStrokeColor: STROKE_DARK_COLORS[0],
+  canvaStrokeWidth: STROKE_WIDTH[0],
+  canvaStrokeDashOffset: STROKE_DASH_OFFSET[0],
+  canvaFillstyle: FillStyle.Hachure,
+  canvaSloppiness: Sloppiness.Architect,
+  canvaEdge: Edges.Sharp,
+  canvaArrowType: ArrowTypes.Arrow,
+  canvaFontSize: FontSize.Small,
+  canvaFontFamily: FontFamily.LivedrawFont,
+
+  onSetCanva: (canvas: HTMLCanvasElement) => set({ canvas }),
+  onSetThemeColor: (color: string) => set({ themeColor: color }),
+  onOpen: (type: CanvaModalType, data: string | null) =>
+    set({ isOpen: true, canvasModalType: type, canvasData: data }),
+  onClose: () => set({ isOpen: false, canvasModalType: null }),
+  onSetRoughCanvas: (roughCanvas: RoughCanvas) => set({ roughCanvas }),
+  onSetCanvasScale: (scale: number) => set({ canvasScale: scale }),
+  onSelectTooltype: (tooltype: ToolType) => set({ tooltype }),
+  onSetCanvaCursorType: (cursorType: CursorType) =>
+    set({ canvaCursorType: cursorType }),
+  onSetCanvaShapes: (shapes: Shape[]) => set({ canvaShapes: shapes }),
+  onSetCanvaBgColor: (color: string) => set({ canvaBgColor: color }),
+  onSetCanvaStrokeColor: (color: string) => set({ canvaStrokeColor: color }),
+  onSetCanvaStrokeWidth: (width: number) => set({ canvaStrokeWidth: width }),
+  onSetCanvaStrokeDashOffset: (offset: number) =>
+    set({ canvaStrokeDashOffset: offset }),
+  onSetCanvaFillstyle: (style: FillStyle) => set({ canvaFillstyle: style }),
+  onSetCanvaSloppiness: (sloppiness: Sloppiness) =>
+    set({ canvaSloppiness: sloppiness }),
+  onSetCanvaEdge: (edge: Edges) => set({ canvaEdge: edge }),
+  onsetCanvaArrowType: (type: ArrowTypes) => set({ canvaArrowType: type }),
+  onSetCanvaFontSize: (type: FontSize) => set({ canvaFontSize: type }),
+  onSetCanvaFontFamily: (font: FontFamily) => set({ canvaFontFamily: font }),
+}));
