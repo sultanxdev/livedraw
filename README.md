@@ -1,4 +1,4 @@
-![Banner](apps/livedraw/public/images/Banner.png?raw=true "LiveDraw app")
+
 
 <div align="center">
   <h2>
